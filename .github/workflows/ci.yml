@@ -56,6 +56,14 @@ jobs:
       - name: Generate temporary JWT signing key
         run: echo "JWT_SECRET_BASE64=$(openssl rand -base64 32)" >> "$GITHUB_ENV"
 
+      - name: Verify PostgreSQL connection
+        run: |
+          PGPASSWORD=ci_test_password psql \
+            -h 127.0.0.1 \
+            -U postgres \
+            -d medicare_db \
+            -c "SELECT 1;"
+
       - name: Run Maven tests
         working-directory: medicare-backend
         run: mvn -B clean verify
